@@ -1,0 +1,47 @@
+<nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+      <a routerLink="/" class="flex items-center space-x-3">
+        <img src="assets/logo.svg" class="h-8" alt="Logo" />
+        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+          Görev Yönetim Sistemi
+        </span>
+      </a>
+      <div class="flex items-center space-x-6">
+        <ng-container *ngIf="userName; else notLogged">
+          <a routerLink="/todo" class="text-sm bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+            Görevler
+          </a>
+          <span class="text-sm text-black">
+            Hoşgeldin, {{ userName }}
+          </span>
+          <button (click)="logout()" class="text-sm bg-red-500 text-black px-3 py-1 rounded hover:bg-red-600">
+            Çıkış
+          </button>
+        </ng-container>
+        <ng-template #notLogged>
+          <a routerLink="/login" class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+            Login
+          </a>
+        </ng-template>
+      </div>
+    </div>
+  </nav>
+  <nav class="bg-gray-50 dark:bg-gray-700">
+    <div class="max-w-screen-xl px-4 py-3 mx-auto">
+      <div class="flex items-center">
+        <ul class="flex flex-row font-medium mt-0 space-x-8 text-sm">
+          <li>
+            <a routerLink="/" class="text-gray-900 dark:text-white hover:underline" aria-current="page">
+              Home
+            </a>
+          </li>          
+          <li *ngIf="userName">
+            <a routerLink="/todo" class="text-gray-900 dark:text-white hover:underline">
+              Görevler
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  

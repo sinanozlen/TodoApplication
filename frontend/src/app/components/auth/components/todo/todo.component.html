@@ -1,0 +1,180 @@
+<div class="min-h-screen p-8 bg-gray-900">
+  <div class="max-w-screen-2xl mx-auto bg-gray-800 rounded-lg p-6 shadow-lg">
+    <!-- Üst Butonlar -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-white">Görev Yönetim Sistemi</h1>
+      <div class="space-x-4">
+        <button class="btn btn-secondary bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+          (click)="changeType('user')" [ngClass]="{ 'active-button': typeName === 'user' }">
+          Kullanıcı
+        </button>
+        <button class="btn btn-primary bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition transform hover:scale-110 duration-300"
+          (click)="changeType('task')" [ngClass]="{ 'active-button': typeName === 'task' }">
+          Görev
+        </button>
+      </div>
+    </div>
+
+    <!-- Kullanıcı Listesi -->
+    <div *ngIf="typeName === 'user'" class="bg-gray-700 rounded-lg p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-white">Kullanıcılar</h2>
+      <table class="min-w-full divide-y divide-gray-600">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left text-white">#</th>
+            <th class="px-4 py-2 text-left text-white">Ad-Soyad</th>
+            <th class="px-4 py-2 text-left text-white">Email</th>
+            <th class="px-4 py-2 text-left text-white">İşlemler</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-600">
+          <tr *ngFor="let user of list; let i = index" class="cursor-pointer hover:bg-gray-600">
+            <td class="px-4 py-2 text-white">{{ i + 1 }}</td>
+            <td class="px-4 py-2 text-white">{{ user.fullname }}</td>
+            <td class="px-4 py-2 text-white">{{ user.email }}</td>
+            <td class="px-4 py-2">
+              <button class="btn btn-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                (click)="removeUser(user); $event.stopPropagation()">
+                Sil
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Yeni Kullanıcı Ekleme Formu -->
+      <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+        <h2 class="text-xl font-semibold mb-4 text-white">Yeni Kullanıcı Ekle</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-white font-medium mb-2">Ad-Soyad</label>
+            <input [(ngModel)]="newUser.fullname" type="text" placeholder="Ad Soyad"
+              class="input input-bordered w-full bg-gray-700 text-white" />
+          </div>
+          <div>
+            <label class="block text-white font-medium mb-2">E-posta</label>
+            <input [(ngModel)]="newUser.email" type="email" placeholder="E-posta"
+              class="input input-bordered w-full bg-gray-700 text-white" />
+          </div>
+        </div>
+        <button class="btn btn-primary bg-red-500 text-white mt-4 px-3 py-1 rounded hover:bg-red-600"
+          (click)="saveUser()">
+          Kullanıcı Ekle
+        </button>
+      </div>
+    </div>
+
+    <!-- Seçilen Kullanıcı Detayları -->
+    <div *ngIf="selectedUser" class="bg-gray-700 rounded-lg p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-white">Seçilen Kullanıcı</h2>
+      <p class="text-white"><strong>Adı Soyadı:</strong> {{ selectedUser.fullname }}</p>
+      <p class="text-white"><strong>Email:</strong> {{ selectedUser.email }}</p>
+    </div>
+
+    <!-- Görev Formu -->
+    <div *ngIf="typeName === 'task'" class="bg-gray-700 rounded-lg p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-white">Yeni Görev</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Başlangıç Tarihi -->
+        <div>
+          <label class="block text-white font-medium mb-2">Başlangıç Tarihi</label>
+          <input [(ngModel)]="newItem.startDate" type="date"
+            class="input input-bordered w-full bg-gray-700 text-white" />
+        </div>
+        <!-- Bitiş Tarihi -->
+        <div>
+          <label class="block text-white font-medium mb-2">Bitiş Tarihi</label>
+          <input [(ngModel)]="newItem.endDate" type="date" class="input input-bordered w-full bg-gray-700 text-white" />
+        </div>
+        <!-- Görev -->
+        <div>
+          <label class="block text-white font-medium mb-2">Görev</label>
+          <input [(ngModel)]="newItem.title" type="text" placeholder="Görev giriniz"
+            class="input input-bordered w-full bg-gray-700 text-white" />
+        </div>
+        <!-- Kullanıcı Seç -->
+        <div>
+          <label class="block text-white font-medium mb-2">Kullanıcı Seç</label>
+          <div class="flex flex-wrap gap-2">
+            <button type="button"
+                    *ngFor="let user of users"
+                    (click)="toggleUserSelection(user._id); $event.stopPropagation()"
+                    [ngClass]="{
+                      'bg-blue-500 hover:bg-blue-600': isUserSelected(user._id),
+                      'bg-gray-500 hover:bg-gray-600': !isUserSelected(user._id)
+                    }"
+                    class="btn text-white px-3 py-1 rounded">
+              {{ user.fullname || 'Kullanıcı Adı Bulunamadı' }}
+            </button>
+          </div>
+        </div>
+        <!-- Tamamlandı mı -->
+        <div>
+          <label class="block text-white font-medium mb-2">Tamamlandı mı?</label>
+          <div class="flex items-center space-x-4">
+            <label class="text-white">
+              <input [(ngModel)]="newItem.completed" type="radio" [value]="true" class="radio radio-primary" />
+              <span class="ml-2">Evet</span>
+            </label>
+            <label class="text-white">
+              <input [(ngModel)]="newItem.completed" type="radio" [value]="false" class="radio radio-secondary" />
+              <span class="ml-2">Hayır</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary bg-red-500 text-white mt-4 px-3 py-1 rounded hover:bg-red-600" (click)="save()">
+        Görev Ekle
+      </button>
+    </div>
+
+    <!-- Görev Listesi -->
+    <div *ngIf="typeName === 'task'" class="bg-gray-700 rounded-lg p-4 shadow-lg overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4 text-white">Görev Listesi</h2>
+      <table class="min-w-full divide-y divide-gray-600">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left text-white">#</th>
+            <th class="px-4 py-2 text-left text-white">Başlangıç Tarihi</th>
+            <th class="px-4 py-2 text-left text-white">Bitiş Tarihi</th>
+            <th class="px-4 py-2 text-left text-white">Görev</th>
+            <th class="px-4 py-2 text-left text-white">Atanan Kullanıcı</th>
+            <th class="px-4 py-2 text-left text-white">Durum</th>
+            <th class="px-4 py-2 text-left text-white">Kalan Gün</th>
+            <th class="px-4 py-2 text-left text-white">İşlemler</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-600">
+          <tr *ngFor="let item of list; let i = index" 
+              class="hover:bg-gray-600"
+              [ngClass]="{'cursor-pointer': !item.parentTask}"
+              (click)="goToTaskDetail(item)">
+            <td class="px-4 py-2 text-white">{{ i + 1 }}</td>
+            <td class="px-4 py-2 text-white">{{ item.startDate | date: 'yyyy-MM-dd' }}</td>
+            <td class="px-4 py-2 text-white">{{ item.endDate | date: 'yyyy-MM-dd' }}</td>
+            <td class="px-4 py-2 text-white">{{ item.title }}</td>
+            <td class="px-4 py-2 text-white">{{ getUserFullName(item.user) }}</td>
+            <td class="px-4 py-2">
+              <span class="badge" [ngClass]="item.completed ? 'badge-success' : 'badge-warning'">
+                {{ item.completed ? 'Tamamlandı' : 'Tamamlanmadı' }}
+              </span>
+            </td>
+            <td class="px-4 py-2 text-white">{{ getRemainingDays(item) }} gün</td>
+            <td class="px-4 py-2">
+              <div class="flex items-center justify-start space-x-2" (click)="$event.stopPropagation()">
+                <button class="btn btn-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                  (click)="toggleComplete(item)">
+                  Durumu Değiştir
+                </button>
+                <button class="btn btn-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  (click)="remove(item)">
+                  Sil
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
